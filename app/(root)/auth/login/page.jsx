@@ -3,6 +3,9 @@
 import { Button } from "@/components/ui/button";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import ButtonLoading from "@/components/application/ButtonLoading";
+import { FaRegEyeSlash } from "react-icons/fa";
+import { FaRegEye } from "react-icons/fa6";
 import {
 	Card,
 	CardAction,
@@ -19,11 +22,14 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { zSchema } from "@/lib/zodSchema";
+import { z } from "zod";
+import { useState } from "react";
 
-const formSchema = zSchema.pick({
-	email: true,
-	password: true,
-});
+const formSchema = zSchema
+	.pick({
+		email: true,
+	})
+	.extend({ password: z.string().min("3", "Password is required!") });
 
 const LoginPage = () => {
 	// useForm সবসময় component এর ভিতরে কল করতে হবে
@@ -36,9 +42,11 @@ const LoginPage = () => {
 	});
 
 	//submit handler
-	const handleLoginSubmit = async (value) => {
-		console.log("Submitted:", value);
+	const handleLoginSubmit = async (values) => {
+		console.log("Submitted:", values);
 	};
+	const [loading, setLoading] = useState(false);
+	const [isTypePassword, setIsTypePassword] = useState(true);
 
 	return (
 		<Card className="w-full max-w-sm">
@@ -74,26 +82,33 @@ const LoginPage = () => {
 							control={form.control}
 							name="password"
 							render={({ field }) => (
-								<FormItem>
+								<FormItem className="relative">
 									<FormLabel>Password</FormLabel>
 									<FormControl>
 										<Input
-											type="password"
+											type={isTypePassword ? "password" : "text"}
 											placeholder="•••••••"
 											{...field}
 										/>
 									</FormControl>
+									<button
+										type="button"
+										className="absolute top-1/2 right-2 cursor-pointer"
+										onClick={() => setIsTypePassword(!isTypePassword)}
+									>
+										{isTypePassword ? <FaRegEyeSlash /> : <FaRegEye />}
+									</button>
 									<FormMessage />
 								</FormItem>
 							)}
 						/>
 
-						<Button
+						<ButtonLoading
 							type="submit"
-							className="w-full"
-						>
-							Login
-						</Button>
+							text="Login"
+							loading={loading}
+							className="w-full cursor-pointer"
+						/>
 					</form>
 				</Form>
 			</CardContent>
