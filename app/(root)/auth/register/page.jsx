@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import ButtonLoading from "@/components/application/ButtonLoading";
 import { FaRegEyeSlash } from "react-icons/fa";
 import { FaRegEye } from "react-icons/fa6";
-import { WEBSITE_REGISTER } from "../../../../routes/WebsiteRoute";
+import { WEBSITE_LOGIN } from "../../../../routes/WebsiteRoute";
 import { Card, CardContent } from "@/components/ui/card";
 import {
 	Form,
@@ -21,40 +21,66 @@ import { z } from "zod";
 import { useState } from "react";
 import Link from "next/link";
 
-const formSchema = zSchema
-	.pick({
-		email: true,
-	})
-	.extend({ password: z.string().min("3", "Password is required!") });
+const RegisterPage = () => {
+	const formSchema = zSchema
+		.pick({
+			name: true,
+			email: true,
+			password: true,
+		})
+		.extend({ confirmPassword: z.string })
+		.refine((data) => data.password === data.confirmPassword, {
+			message: "Password and confirm password must be same.",
+			path: ["confirmPassword"],
+		});
 
-const LoginPage = () => {
 	const form = useForm({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
+			name: "",
 			email: "",
 			password: "",
+			confirmPassword: "",
 		},
 	});
 
 	//submit handler
-	const handleLoginSubmit = async (values) => {
+	const handleRegisterSubmit = async (values) => {
 		console.log("Submitted:", values);
 	};
 	const [loading, setLoading] = useState(false);
 	const [isTypePassword, setIsTypePassword] = useState(true);
+	const [isConfirmTypePassword, setIsConfirmTypePassword] = useState(true);
 
 	return (
 		<Card className="w-full max-w-sm">
 			<CardContent>
 				<p className="text-center text-2xl font-semibold">Logo</p>
-				<p className="text-center mt-4">Log in to your account!</p>
+				<p className="text-center mt-4">Create Account!</p>
 
 				{/* form wrapper */}
 				<Form {...form}>
 					<form
-						onSubmit={form.handleSubmit(handleLoginSubmit)}
+						onSubmit={form.handleSubmit(handleRegisterSubmit)}
 						className="space-y-4"
 					>
+						<FormField
+							control={form.control}
+							name="name"
+							render={({ field }) => (
+								<FormItem>
+									<FormLabel>Name</FormLabel>
+									<FormControl>
+										<Input
+											type="text"
+											placeholder="John Doe"
+											{...field}
+										/>
+									</FormControl>
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
 						<FormField
 							control={form.control}
 							name="email"
@@ -97,10 +123,36 @@ const LoginPage = () => {
 								</FormItem>
 							)}
 						/>
+						<FormField
+							control={form.control}
+							name="confirmPassword"
+							render={({ field }) => (
+								<FormItem className="relative">
+									<FormLabel>Confirm Password</FormLabel>
+									<FormControl>
+										<Input
+											type={isConfirmTypePassword ? "password" : "text"}
+											placeholder="•••••••"
+											{...field}
+										/>
+									</FormControl>
+									<button
+										type="button"
+										className="absolute top-1/2 right-2 cursor-pointer"
+										onClick={() =>
+											setIsConfirmTypePassword(!isConfirmTypePassword)
+										}
+									>
+										{isConfirmTypePassword ? <FaRegEyeSlash /> : <FaRegEye />}
+									</button>
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
 
 						<ButtonLoading
 							type="submit"
-							text="Login"
+							text="Create Account"
 							loading={loading}
 							className="w-full cursor-pointer"
 						/>
@@ -109,12 +161,12 @@ const LoginPage = () => {
 			</CardContent>
 			<div>
 				<div className="flex items-center justify-center gap-2">
-					<p>Do not have a account?</p>
+					<p>Already have a account?</p>
 					<Link
 						className="text-primary text-sm underline"
-						href={WEBSITE_REGISTER}
+						href={WEBSITE_LOGIN}
 					>
-						Create an Account
+						Login
 					</Link>
 				</div>
 				<Link
@@ -127,5 +179,4 @@ const LoginPage = () => {
 		</Card>
 	);
 };
-
-export default LoginPage;
+export default RegisterPage;
