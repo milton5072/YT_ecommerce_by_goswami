@@ -1,7 +1,6 @@
 import { response } from "../../../../lib/helperFunction";
 import UserModel from "../../../../models/User.model";
 import connectDB from "./lib/databaseConnection";
-
 export async function POST(request) {
 	try {
 		await connectDB();
@@ -33,6 +32,12 @@ export async function POST(request) {
 			password,
 		});
 		await newRegistration.save();
+    const secret = new TextEncoder().encode(process.env.SECRET_KEY);
+    const token = await new SignJWT({ userId: newRegistration._id })
+    .setIssueAt()
+    .setExpirationTime('1h')
+    .setProtectedHeader({ alg: 'HS256' })
+    .sign(secret);
 	} catch (error) {
 		return new Response(JSON.stringify({ message: "Internal Server Error" }), {
 			status: 500,
