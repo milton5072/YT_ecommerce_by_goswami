@@ -20,6 +20,7 @@ import { zSchema } from "@/lib/zodSchema";
 import { z } from "zod";
 import { useState } from "react";
 import Link from "next/link";
+import axios from "axios";
 
 const RegisterPage = () => {
 	const formSchema = zSchema
@@ -28,7 +29,7 @@ const RegisterPage = () => {
 			email: true,
 			password: true,
 		})
-		.extend({ confirmPassword: z.string })
+		.extend({ confirmPassword: z.string() })
 		.refine((data) => data.password === data.confirmPassword, {
 			message: "Password and confirm password must be same.",
 			path: ["confirmPassword"],
@@ -44,13 +45,34 @@ const RegisterPage = () => {
 		},
 	});
 
-	//submit handler
-	const handleRegisterSubmit = async (values) => {
-		console.log("Submitted:", values);
-	};
+	// destructure handleSubmit to avoid `form.handleSubmit is not a function` errors
+	const { handleSubmit } = form;
+
 	const [loading, setLoading] = useState(false);
 	const [isTypePassword, setIsTypePassword] = useState(true);
 	const [isConfirmTypePassword, setIsConfirmTypePassword] = useState(true);
+
+	//submit handler
+	const handleRegisterSubmit = async (values) => {
+		console.log("Submitted:", values);
+		try {
+			setLoading(true);
+			const { data: registerResponse } = await axios.post(
+				"/api/auth/register",
+				values
+			);
+			if (!registerResponse.success) {
+				throw new Error(registerResponse.message);
+			}
+			setLoading(false);
+			form.reset();
+			alert(registerResponse.message);
+		} catch (error) {
+			alert(error?.response?.data?.message || error.message);
+		} finally {
+			setLoading(false);
+		}
+	};
 
 	return (
 		<Card className="w-full max-w-sm">
@@ -61,7 +83,7 @@ const RegisterPage = () => {
 				{/* form wrapper */}
 				<Form {...form}>
 					<form
-						onSubmit={form.handleSubmit(handleRegisterSubmit)}
+						onSubmit={handleSubmit(handleRegisterSubmit)}
 						className="space-y-4"
 					>
 						<FormField

@@ -36,6 +36,9 @@ const LoginPage = () => {
 		},
 	});
 
+	// destructure handleSubmit to avoid `form.handleSubmit is not a function` errors
+	const { handleSubmit } = form;
+
 	//submit handler
 	const handleLoginSubmit = async (values) => {
 		console.log("Submitted:", values);
@@ -52,7 +55,7 @@ const LoginPage = () => {
 				{/* form wrapper */}
 				<Form {...form}>
 					<form
-						onSubmit={form.handleSubmit(handleLoginSubmit)}
+						onSubmit={handleSubmit(handleLoginSubmit)}
 						className="space-y-4"
 					>
 						<FormField

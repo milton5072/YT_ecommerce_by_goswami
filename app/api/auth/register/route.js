@@ -1,6 +1,10 @@
 import { response, catchError } from "../../../../lib/helperFunction";
 import UserModel from "../../../../models/User.model";
-import connectDB from "./lib/databaseConnection";
+import { connectDB } from "../../../../lib/databaseConnection";
+import { zSchema } from "../../../../lib/zodSchema";
+import { SignJWT } from "jose";
+import { sendMail } from "../../../../lib/sendMail";
+import { emailVerificationLink } from "../../../../email/emailVerificationLink";
 export async function POST(request) {
 	try {
 		await connectDB();
@@ -17,15 +21,12 @@ export async function POST(request) {
 			});
 		}
 		const { name, email, password } = validatedData.data;
+		// check if user already exists
 		const checkUser = await UserModel.exists({ email });
 		if (checkUser) {
-			return response(
-				true,
-				409,
-				"User already exists with this email.",
-				validatedData.error
-			);
+			return response(false, 409, "User already exists with this email.", {});
 		}
+		// create new user
 		const newRegistration = new UserModel({
 			name,
 			email,
@@ -33,8 +34,8 @@ export async function POST(request) {
 		});
 		await newRegistration.save();
 		const secret = new TextEncoder().encode(process.env.SECRET_KEY);
-		const token = await new SignJWT({ userId: newRegistration._id })
-			.setIssueAt()
+		const token = await new SignJWT({ userId: newRegistration._id.toString() })
+			.setIssuedAt()
 			.setExpirationTime("1h")
 			.setProtectedHeader({ alg: "HS256" })
 			.sign(secret);
@@ -42,7 +43,7 @@ export async function POST(request) {
 			"Email Verification Request from Kazi Asad",
 			email,
 			emailVerificationLink(
-				`${process.env.NEXT_PUBLIC_BASE_URL}/auth/verify-email?token=${token}`
+				`${process.env.NEXT_PUBLIC_BASE_URL}/auth/verify-email/token?token=${token}`
 			)
 		);
 		return response(
@@ -54,6 +55,6 @@ export async function POST(request) {
 			}
 		);
 	} catch (error) {
-		catchError(error, "Registration failed.");
+		return catchError(error, "Registration failed.");
 	}
 }
