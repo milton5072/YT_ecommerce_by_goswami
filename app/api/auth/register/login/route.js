@@ -1,8 +1,9 @@
 import z from "zod";
 import { connectDB } from "../../../../../lib/databaseConnection";
-import { catchError } from "../../../../../lib/helperFunction";
+import { catchError, generateOTP } from "../../../../../lib/helperFunction";
 import { zSchema } from "../../../../../lib/zodSchema";
 import { z } from "zod";
+import optModel from "../../../../../models/Otp.model";
 export async function POST(request) {
 	try {
 		await connectDB();
@@ -56,6 +57,16 @@ export async function POST(request) {
 			return response(false, 400, "Invalid login credentials.");
 		}
 		// otp generation
+    await optModel.deleteMany({email}) //deleting old otp
+    const otp = generateOTP()
+
+    //store otp in database
+    const newOtpData = new optModel({
+      email, otp
+    })
+    await newOtpData.save()
+
+
 	} catch (error) {
 		return catchError(error, "Login failed.");
 	}
