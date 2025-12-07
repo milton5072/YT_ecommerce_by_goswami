@@ -1,9 +1,13 @@
 import z from "zod";
 import { connectDB } from "../../../../../lib/databaseConnection";
-import { catchError, generateOTP } from "../../../../../lib/helperFunction";
+import { catchError, generateOTP, response } from "../../../../../lib/helperFunction";
 import { zSchema } from "../../../../../lib/zodSchema";
 import { z } from "zod";
 import optModel from "../../../../../models/Otp.model";
+import { otpEmail } from "../../../../../email/otpEmail";
+import {sendMail} from "../../../../../lib/sendMail";
+
+
 export async function POST(request) {
 	try {
 		await connectDB();
@@ -66,6 +70,11 @@ export async function POST(request) {
     })
     await newOtpData.save()
 
+    const otpEmailStatus = await sendMail('Your login verification code.', email, otpEmail(otp))
+    if(!otpEmailStatus.success){
+      return response(false, 400, 'Failed to send otp.')
+    }
+    return response(true, 200, 'Please verify your OTP.')
 
 	} catch (error) {
 		return catchError(error, "Login failed.");
