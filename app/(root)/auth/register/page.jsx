@@ -21,6 +21,7 @@ import { z } from "zod";
 import { useState } from "react";
 import Link from "next/link";
 import axios from "axios";
+import { showToast } from "../../../../lib/showToast";
 
 const RegisterPage = () => {
 	const formSchema = zSchema
@@ -66,9 +67,9 @@ const RegisterPage = () => {
 			}
 			setLoading(false);
 			form.reset();
-			alert(registerResponse.message);
+			showToast("success", registerResponse.message);
 		} catch (error) {
-			alert(error?.response?.data?.message || error.message);
+			showToast("error", error?.response?.data?.message || error.message);
 		} finally {
 			setLoading(false);
 		}

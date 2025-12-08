@@ -1,5 +1,5 @@
 "use client";
-
+import axios from "axios";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import ButtonLoading from "@/components/application/ButtonLoading";
@@ -20,6 +20,7 @@ import { zSchema } from "@/lib/zodSchema";
 import { z } from "zod";
 import { useState } from "react";
 import Link from "next/link";
+import { showToast } from "../../../../lib/showToast";
 
 const formSchema = zSchema
 	.pick({
@@ -41,7 +42,23 @@ const LoginPage = () => {
 
 	//submit handler
 	const handleLoginSubmit = async (values) => {
-		console.log("Submitted:", values);
+		try {
+			setLoading(true);
+			const { data: registerResponse } = await axios.post(
+				"/api/auth/login",
+				values
+			);
+			if (!registerResponse.success) {
+				throw new Error(registerResponse.message);
+			}
+			setLoading(false);
+			form.reset();
+			showToast("success", registerResponse.message);
+		} catch (error) {
+			showToast("error", error?.response?.data?.message || error.message);
+		} finally {
+			setLoading(false);
+		}
 	};
 	const [loading, setLoading] = useState(false);
 	const [isTypePassword, setIsTypePassword] = useState(true);
