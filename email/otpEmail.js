@@ -1,3 +1,4 @@
+
 export const otpEmail = (otp) => {
 	const html = `
                     <!DOCTYPE html>
@@ -17,8 +18,7 @@ export const otpEmail = (otp) => {
             <body>
 
                 <h1>Welcome to My Website</h1>
-                <p>This is a basic HTML boilerplate.</p>
-                <a href="${otp}">Click here to verify your email</a>
+                <p>${otp}</p>
                 
 
             </body>
