@@ -21,6 +21,7 @@ import { z } from "zod";
 import { useState } from "react";
 import Link from "next/link";
 import { showToast } from "../../../../lib/showToast";
+import OtpVarification from "../../../../components/application/OtpVarification";
 
 const formSchema = zSchema
 	.pick({
@@ -30,6 +31,7 @@ const formSchema = zSchema
 
 const LoginPage = () => {
 	const [loading, setLoading] = useState(false);
+	const [otpVerificationLoading, setOtpVerificationLoading] = useState(false);
 	const [isTypePassword, setIsTypePassword] = useState(true);
 	const [otpEmail, setOtpEmail] = useState("");
 
@@ -65,14 +67,19 @@ const LoginPage = () => {
 			setLoading(false);
 		}
 	};
-
+  // OTP verification 
+  const handleOtpVerification = async(values)=>{
+    console.log(values, "asad");
+  }
 	return (
-		<Card className="w-full max-w-sm">
-			<CardContent>
-				<p className="text-center text-2xl font-semibold">Logo</p>
-				<p className="text-center mt-4">Log in to your account!</p>
-				{!otpEmail ? (
-					<>
+    <>
+      <Card className="w-full max-w-sm m-auto">
+        {!otpEmail ? (
+          
+			  <CardContent>
+				
+          <p className="text-center text-2xl font-semibold">Logo</p>
+          <p className="text-center mt-4">Log in to your account!</p>
 						{/* form wrapper */}
 						<Form {...form}>
 							<form
@@ -130,12 +137,7 @@ const LoginPage = () => {
 								/>
 							</form>
 						</Form>
-					</>
-				) : (
-					<></>
-				)}
-			</CardContent>
-			<div>
+            <div>
 				<div className="flex items-center justify-center gap-2">
 					<p>Do not have a account?</p>
 					<Link
@@ -152,8 +154,19 @@ const LoginPage = () => {
 					Forget Password
 				</Link>
 			</div>
-		</Card>
-	);
+				
+			</CardContent>
+			
+    )
+    :(<>
+      <OtpVarification email={otpEmail} loading={otpVerificationLoading} onSubmit={handleOtpVerification}/>
+    </>) 
+					
+
+				}
+	    </Card>
+    </>
+	)
 };
 
 export default LoginPage;
