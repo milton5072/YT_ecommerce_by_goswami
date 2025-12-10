@@ -1,4 +1,3 @@
-
 export const otpEmail = (otp) => {
 	const html = `
                     <!DOCTYPE html>
@@ -17,8 +16,8 @@ export const otpEmail = (otp) => {
             </head>
             <body>
 
-                <h1>Welcome to My Website</h1>
-                <p>${otp}</p>
+                <p>We have received a request to verify your identity. Use the following one-time password (OTP) to complete the verification process.</p>
+                <h1>${otp}</h1>
                 
 
             </body>
