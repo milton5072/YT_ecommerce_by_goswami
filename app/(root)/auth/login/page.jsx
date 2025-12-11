@@ -69,7 +69,22 @@ const LoginPage = () => {
 	};
   // OTP verification 
   const handleOtpVerification = async(values)=>{
-    console.log(values, "asad");
+    try {
+			setOtpVerificationLoading(true);
+			const { data: registerResponse } = await axios.post(
+				"/api/auth/verify-otp",
+				values
+			);
+			if (!registerResponse.success) {
+				throw new Error(registerResponse.message);
+			}
+			setOtpEmail('');
+			showToast("success", registerResponse.message);
+		} catch (error) {
+			showToast("error", error?.response?.data?.message || error.message);
+		} finally {
+			setOtpVerificationLoading(false);
+		}
   }
 	return (
     <>
