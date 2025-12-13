@@ -50,12 +50,12 @@ const LoginPage = () => {
 	const handleLoginSubmit = async (values) => {
 		try {
 			setLoading(true);
-			const { data: registerResponse } = await axios.post(
+			const { data: loginResponse } = await axios.post(
 				"/api/auth/login",
 				values
 			);
-			if (!registerResponse.success) {
-				throw new Error(registerResponse.message);
+			if (!loginResponse.success) {
+				throw new Error(loginResponse.message);
 			}
 			setOtpEmail(values.email);
 			setLoading(false);
