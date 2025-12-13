@@ -1,11 +1,11 @@
-import connectDB from "@/lib/dbConnect";
-import { response, catchError } from "@/lib/helperFunction";
-import { zSchema } from "@/lib/zodSchema";
-import optModel from "@/models/Otp.model";
-import UserModel from "@/models/User.model";
-import { generateOTP } from "@/lib/otpGenerator";
-import { sendMail } from "@/lib/sendMail";
-import { otpEmail } from "@/lib/emailTemplates/otpEmailTemplate";
+import { connectDB } from "@/lib/databaseConnection";
+import { response, catchError } from "../../../../lib/helperFunction";
+import { zSchema } from "../../../../lib/zodSchema";
+import optModel from "../../../../models/Otp.model";
+import UserModel from "../../../../models/User.model";
+import { generateOTP } from "../../../../lib/helperFunction";
+import { sendMail } from "../../../../lib/sendMail";
+import { otpEmail } from "../../../../email/otpEmail";
 
 export async function POST(request) {
 	try {
@@ -20,6 +20,7 @@ export async function POST(request) {
 				errors: validatedData.error.errors,
 			});
 		}
+    const {email}=validatedData.data
 		const getUser = await UserModel.findOne({ email });
 		if (!getUser) {
 			return response(false, 404, "User not found.", {});

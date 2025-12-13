@@ -17,8 +17,11 @@ import {
 
 import ButtonLoading from "./ButtonLoading";
 import { zSchema } from "../../lib/zodSchema";
-
+import axios from "axios";
+import {showToast} from "../../lib/showToast";
+import {useState} from "react"
 const OtpVerification = ({ email, onSubmit, loading }) => {
+  const [isResendingOtp, setIsResendingOtp] = useState(false)
 	const formSchema = zSchema.pick({ otp: true, email: true });
 
 	const form = useForm({
@@ -32,8 +35,21 @@ const OtpVerification = ({ email, onSubmit, loading }) => {
 	const handleOtpVerification = (values) => {
 		onSubmit(values);
 	};
-
-	const resendOTP = async () => {};
+//resending otp
+	const resendOTP = async () => {
+    try{
+      setIsResendingOtp(true)
+      const {data:registerResponse}= await axios.post('/api/auth/resend-otp', { email })
+      if(!registerResponse.success){
+        throw new Error(registerResponse.message)
+      }
+      showToast('success', registerResponse.message)
+    }catch(error){
+      showToast('error', error.message)
+    }finally{
+      setIsResendingOtp(false)
+    }
+  };
 
 	return (
 		<div>
@@ -93,12 +109,18 @@ const OtpVerification = ({ email, onSubmit, loading }) => {
 
 					{/* Resend OTP */}
 					<div className="text-center mt-5">
-						<button
-							type="button"
-							className="text-blue-500 cursor-pointer hover:underline"
-						>
-							Resend OTP
-						</button>
+            {!isResendingOtp ? 
+              <button
+                type="button"
+                className="text-blue-500 cursor-pointer hover:underline"
+                onClick={resendOTP}
+              >
+                Resend OTP
+              </button>
+              : (
+              <p>Resending OTP...</p>
+             )}
+						
 					</div>
 				</form>
 			</Form>
