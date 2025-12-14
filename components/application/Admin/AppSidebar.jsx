@@ -20,12 +20,12 @@ import { LuChevronRight } from "react-icons/lu";
 
 const AppSidebar = () => {
 	return (
-		<Sidebar>
+		<Sidebar className="z-50">
 			<div className="flex justify-between items-center font-bold dark:text-white px-4 border-b py-3">
 				Logo
 				<button type="button">X</button>
 			</div>
-			<SidebarContent>
+			<SidebarContent className="p-2">
 				<SidebarMenu>
 					{adminAppSidebarMenu.map((menu, index) => (
 						<Collapsible
@@ -34,7 +34,7 @@ const AppSidebar = () => {
 						>
 							<SidebarMenuItem>
 								<CollapsibleTrigger asChild>
-									<SidebarMenuButton asChild>
+									<SidebarMenuButton asChild className = "font-semibold px-2 py-5">
 										<Link href={menu?.url}>
 											<menu.icon />
 											<span>{menu.title}</span>
@@ -52,7 +52,7 @@ const AppSidebar = () => {
 													<SidebarGroupLabel key={subIndex}>
 														<Link
 															href={subMenu.url}
-															className="pl-10"
+															className="w-full pl-2 py-3 hover:bg-gray-100"
 														>
 															{subMenu.title}
 														</Link>
