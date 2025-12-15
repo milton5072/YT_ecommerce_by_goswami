@@ -1,3 +1,4 @@
+'use client';
 import {
 	Sidebar,
 	SidebarContent,
@@ -8,7 +9,7 @@ import {
 	SidebarMenuButton,
 	SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { AiOutlineDashboard } from "react-icons/ai";
+import { Button } from "@/components/ui/button";
 import adminAppSidebarMenu from "../../../lib/adminSidebarMenu";
 import Link from "next/link";
 import {
@@ -17,13 +18,18 @@ import {
 	CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { LuChevronRight } from "react-icons/lu";
+import { IoMdClose } from "react-icons/io";
+import {useSidebar} from "@/components/ui/sidebar"
 
 const AppSidebar = () => {
+  const {toggleSidebar}= useSidebar()
 	return (
 		<Sidebar className="z-50">
 			<div className="flex justify-between items-center font-bold dark:text-white px-4 border-b py-3">
 				Logo
-				<button type="button">X</button>
+				<Button type="button" className="md:hidden" onClick={toggleSidebar}>
+          <IoMdClose/>
+        </Button>
 			</div>
 			<SidebarContent className="p-2">
 				<SidebarMenu>
