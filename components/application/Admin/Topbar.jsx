@@ -1,11 +1,14 @@
+'use client';
 import ThemeSwitch from "./ThemeSwitch";
 import UserDropdown from "./UserDropdown";
 import { Button } from "@/components/ui/button";
 import { RiMenu4Fill } from "react-icons/ri";
+import {useSidebar} from "@/components/ui/sidebar";
 
 const Topbar = () => {
+  const {toggleSidebar}= useSidebar()
 	return (
-		<div className="fixed border-b border-gray-200 h-12 top-0 left-0 right-0 z-30 pr-4 md:pl-70 flex justify-between items-center bg-white dark:bg-card">
+		<div className="fixed border-b border-gray-200 h-12 top-0 left-0 right-0 z-30 px-4 md:pl-70 flex justify-between items-center bg-white dark:bg-card">
 			<div>
 				<p>Search Component</p>
 			</div>
@@ -16,6 +19,7 @@ const Topbar = () => {
 					type="button"
 					size="icon"
 					className="md:hidden"
+          onClick={toggleSidebar}
 				>
 					<RiMenu4Fill />
 				</Button>
