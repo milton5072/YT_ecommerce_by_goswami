@@ -1,28 +1,37 @@
 "use client";
+
 import { CldUploadWidget } from "next-cloudinary";
 import { Button } from "@/components/ui/button";
 import { FilePlus } from "lucide-react";
+import { showToast } from "@/lib/showToast";
 
-const handleOnQueuesEnd = (result) => {
-	console.log("Upload Result: ", result);
-};
 const UploadMedia = ({ isMultiple }) => {
 	const handleOnError = (error) => {
-		console.error("Upload Error: ", error);
+		console.error("Upload Error:", error);
+		showToast("error", error?.statusText || "Upload failed");
+	};
+
+	const handleOnQueuesEnd = async (results) => {
+		console.log("Upload Result:", results);
+		showToast("success", "Upload completed successfully");
 	};
 
 	return (
 		<CldUploadWidget
-			signatureEndpoint="api/cloudinary-signature"
+			signatureEndpoint="/api/cloudinary-signature"
 			uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET}
 			onError={handleOnError}
 			onQueuesEnd={handleOnQueuesEnd}
 			config={{
-				cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
-				apiKey: process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY,
+				cloud: {
+					cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
+					apiKey: process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY,
+				},
 			}}
 			options={{
 				multiple: isMultiple,
+				maxFiles: isMultiple ? 10 : 1,
+				folder: process.env.NEXT_PUBLIC_CLOUDINARY_FOLDER,
 				sources: [
 					"local",
 					"url",
@@ -33,19 +42,16 @@ const UploadMedia = ({ isMultiple }) => {
 					"dropbox",
 					"instagram",
 				],
-				folder: process.env.CLOUDINARY_FOLDER,
-				maxFiles: isMultiple ? 10 : 1,
 			}}
 		>
-			{({ open }) => {
-				return (
-					<Button onClick={() => open && open()}>
-						<FilePlus className="mr-2 h-4 w-4" />
-						Upload Media
-					</Button>
-				);
-			}}
+			{({ open }) => (
+				<Button onClick={() => open?.()}>
+					<FilePlus className="mr-2 h-4 w-4" />
+					Upload Media
+				</Button>
+			)}
 		</CldUploadWidget>
 	);
 };
+
 export default UploadMedia;
