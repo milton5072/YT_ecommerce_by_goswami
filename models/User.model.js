@@ -1,6 +1,4 @@
 import mongoose from "mongoose";
-import { trim } from "zod";
-import { is } from "zod/locales";
 import bcrypt from "bcryptjs";
 
 const userSchema = new mongoose.Schema(
